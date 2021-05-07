@@ -1,0 +1,88 @@
+.MODEL SMALL
+.STACK 100H
+.DATA          
+MSG1 DB 'INPUT:$'
+MSG DB 0DH,0AH,'DECIMAL OUTPUT:$'
+.CODE
+MAIN PROC    
+    MOV AX,@DATA
+    MOV DS,AX
+    
+    LEA DX, MSG1
+    MOV AH,9
+    INT 21H
+                 
+                 
+    CALL INPUT 
+    
+     mov bx,22
+     mov ax,cx
+     mul bx
+     mov cx,ax
+     
+     mov bx,1260
+     mov ax,cx
+     div bx
+     mov bx,ax
+     
+     
+     
+     LEA DX, MSG
+     MOV AH,9
+     INT 21H   
+     
+     MOV AX,BX
+     CALL OUTDEC
+    
+     MOV AH,4CH
+     INT 21H
+    
+    MAIN ENDP  
+
+INPUT PROC
+    
+    XOR CX,CX 
+    mov bx,cx
+    MOV AH,00h
+    INT 16H  
+    
+    WHILE:
+    MOV AH,0
+    SUB AX,48
+    PUSH AX
+    MOV AX,10
+    MUL BX
+    POP BX
+    
+    ADD BX,AX
+    mov cx,bx
+    
+    MOV AH,00h
+    INT 16H
+    CMP AL,0DH
+    JNE WHILE
+             
+    
+    RET         
+    INPUT ENDP
+OUTDEC PROC      
+    XOR CX,CX
+    MOV BX,10
+              
+    REPEAT:
+    CWD
+    DIV BX
+    PUSH DX
+    INC CX
+    CMP AX,0
+    JNE REPEAT          
+        
+    PRINT:
+    POP DX
+    ADD DL,48
+    mov ah, 0eh
+    int 10h
+    LOOP PRINT
+    RET
+    OUTDEC ENDP    
+END MAIN
